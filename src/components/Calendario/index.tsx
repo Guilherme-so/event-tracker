@@ -1,10 +1,10 @@
 import Kalend, { CalendarEvent, CalendarView, OnEventDragFinish } from 'kalend'
 import ptBR from './localizacao/ptBR.json'
 import 'kalend/dist/styles/index.css';
-import style from './Calendario.module.scss';
-import { useRecoilValue } from 'recoil';
-import { listaDeEventosState } from '../../state/atom';
+import useListaDeEventos from '../../state/Hooks/useListaDeEventos';
 import useAtualizarEvento from '../../state/Hooks/useAtualizarEvento';
+import style from './Calendario.module.scss';
+
 
 interface IKalendEvento {
   id?: number
@@ -16,8 +16,7 @@ interface IKalendEvento {
 
 const Calendario = () => {
   const eventosKalend = new Map<string, IKalendEvento[]>();
-  // quando for so pega os valores useRecoilValue
-  const eventos = useRecoilValue(listaDeEventosState)
+  const eventos = useListaDeEventos()
 
   const atualizarEvento = useAtualizarEvento()
 

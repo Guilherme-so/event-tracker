@@ -1,5 +1,4 @@
-import {useRecoilValue} from "recoil"
-import { listaDeEventosState } from "../../state/atom";
+import useListaDeEventos from "../../state/Hooks/useListaDeEventos";
 import Evento from "../Evento";
 import Filtro from "../Filtro";
 import style from "./ListaDeEventos.module.scss";
@@ -9,8 +8,7 @@ interface Props {
 }
 
 const ListaDeEventos = ({aoFiltroAplicado }: Props) => {
-  //so ler algo do recoil useRecoilValue
-  const eventos = useRecoilValue(listaDeEventosState)
+  const eventos = useListaDeEventos()
   
   return (
     <section>
