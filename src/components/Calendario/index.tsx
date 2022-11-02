@@ -1,10 +1,10 @@
-
-import React from 'react'
-import { IEvento } from '../../interfaces/IEvento';
-import style from './Calendario.module.scss';
+import Kalend, { CalendarEvent, CalendarView, OnEventDragFinish } from 'kalend'
 import ptBR from './localizacao/ptBR.json'
-import Kalend, { CalendarView } from 'kalend'
 import 'kalend/dist/styles/index.css';
+import style from './Calendario.module.scss';
+import { useRecoilValue } from 'recoil';
+import { listaDeEventosState } from '../../state/atom';
+import useAtualizarEvento from '../../state/Hooks/useAtualizarEvento';
 
 interface IKalendEvento {
   id?: number
@@ -14,9 +14,12 @@ interface IKalendEvento {
   color: string
 }
 
-const Calendario: React.FC<{ eventos: IEvento[] }> = ({ eventos }) => {
-
+const Calendario = () => {
   const eventosKalend = new Map<string, IKalendEvento[]>();
+  // quando for so pega os valores useRecoilValue
+  const eventos = useRecoilValue(listaDeEventosState)
+
+  const atualizarEvento = useAtualizarEvento()
 
   eventos.forEach(evento => {
     const chave = evento.inicio.toISOString().slice(0, 10)
@@ -31,6 +34,23 @@ const Calendario: React.FC<{ eventos: IEvento[] }> = ({ eventos }) => {
       color: 'blue'
     })
   })
+
+
+  const onEventDragFinish: OnEventDragFinish = (
+    kalendEventoInalterado: CalendarEvent,
+    KalendEventoAtualizado: CalendarEvent,
+    ) => {
+      const evento = eventos.find(evento => evento.descricao === KalendEventoAtualizado.summary)
+      if(evento) {
+        const eventoAtualizado = {
+          ...evento
+        }
+        eventoAtualizado.inicio = new Date(KalendEventoAtualizado.startAt)
+        eventoAtualizado.fim = new Date(KalendEventoAtualizado.endAt)
+        atualizarEvento(eventoAtualizado)
+      }
+    };
+
   return (
     <div className={style.Container}>
       <Kalend
@@ -43,6 +63,7 @@ const Calendario: React.FC<{ eventos: IEvento[] }> = ({ eventos }) => {
         calendarIDsHidden={['work']}
         language={'customLanguage'}
         customLanguage={ptBR}
+        onEventDragFinish={onEventDragFinish}
       />
     </div>
   );

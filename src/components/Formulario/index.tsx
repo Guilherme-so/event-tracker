@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
+import { useSetRecoilState } from 'recoil';
 import { IEvento } from '../../interfaces/IEvento';
+import { listaDeEventosState } from '../../state/atom';
+import { userId } from '../../util';
 import style from './Formulario.module.scss';
 
-const Formulario: React.FC<{ aoSalvar: (evento: IEvento) => void }> = ({ aoSalvar }) => {
+const Formulario = () => {
+  // para alterar algo em recoil useSetRecoilState
+  const setEventos = useSetRecoilState<IEvento[]>(listaDeEventosState)
+
   const [descricao, setDescricao] = useState('')
   const [dataInicio, setDataInicio] = useState('')
   const [horaInicio, setHoraInicio] = useState('')
@@ -16,12 +22,14 @@ const Formulario: React.FC<{ aoSalvar: (evento: IEvento) => void }> = ({ aoSalva
 
   const submeterForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    aoSalvar({
+    const evento = {
+      id: userId(),
       descricao,
       inicio: montarData(dataInicio, horaInicio),
       fim: montarData(dataFim, horaFim),
       completo: false
-    })
+    }
+    setEventos(listaAntiga => [...listaAntiga, evento])
     setDescricao('')
     setDataInicio('')
     setHoraInicio('')
